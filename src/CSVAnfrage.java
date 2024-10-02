@@ -6,7 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//Aufgabe aus IHK Prüfung Winter 22 AP2
+//die Fehler hier entstehen dadurch, dass in der Aufgabe vorgegebene
+//Klassen "Flaeche" und "Anfrage" hier nicht implemeniert sind
+
 public class CSVAnfrage extends Anfrage { //Punkt: Vererbung von Anfrage
+
+    //die Attribute laut UML
+    //von der abstrakten Klasse geerbt
+    //(da protected), was fragwürdig ist, aber hier so gemacht
+    //die Verwendung von Settern und Gettern wäre angebrachter mMn
 
     public CSVAnfrage( String pfad) throws IOException { //Punkt: Constuctor mit diesen Parametern
 
@@ -16,29 +25,28 @@ public class CSVAnfrage extends Anfrage { //Punkt: Vererbung von Anfrage
         String text = Files.readString(path, Charset.defaultCharset() );
         String[] daten = text.split(";");
 
-        //Punkt: Einzeldaten Variablen zuweisen
-        int nr = Integer.parseInt(daten[0]);//Punkt: Datentyp konvertieren
+        //Punkt: Einzeldaten den Eigenschaften der Klasse zuweisen
+        this.anfrageNummer = Integer.parseInt(daten[0]);//Punkt: Datentyp konvertieren
+        this.kwp = Double.parseDouble(daten[1]);//Punkt: Datentyp konvertieren
 
-        int kw = Integer.parseInt(daten[1]);
+        if(daten[2].isEmpty()){//Punkt: prüfen ob pvLeistung vorhanden ist
+            this.pvLeistung = null;
+        }
+        else {
+            this.speicherKapazitaet = Double.parseDouble(daten[2]);//Punkt: Datentyp konvertieren
+        }
 
-        int speicherKwh = Integer.parseInt(daten[2]);
+        //Punkt: Array deklarieren um die anfallenden Daten der Flächen zu speichern
+        Flaeche[] flaechen = new Flaeche[daten.length - 3];
 
-        String[] flaechenWest = daten[3].split(",");
-        String[] flaechenOst = daten[4].split(",");
+        for(int i= 3; i < daten.length; i++){
+            String[] flaechenDaten = daten[i].split(",");//Separator ist hier Komma!
+            flaechen[i] = new Flaeche(flaechenDaten[0],
+                                      flaechenDaten[1],
+                                      flaechenDaten[2]
+            );
+        }
 
-
-        //Aufgabe: allgemeingültig für mehrere Flächen mit Hilfe einer Schleife lösen
-        String nameWest = flaechenWest[0];
-        int laengeWest = Integer.parseInt(flaechenWest[1]);
-        int breiteWest = Integer.parseInt(flaechenWest[2]);
-
-        String nameOst = flaechenOst[0];
-        int laengeOst = Integer.parseInt(flaechenOst[1]);
-        int breiteOst = Integer.parseInt(flaechenOst[2]);
-
-
-
-
-
+        this.dachFlaechen = flaechen;
     }
 }
